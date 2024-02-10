@@ -9,15 +9,46 @@ use App\Models\Category;
 
 class CategoryController extends Controller
 {
+
+    function assetify($category)
+    {
+
+        $category->avatar =  asset("storage/" . $category->avatar);
+        $category->cover =  asset("storage/" . $category->cover);
+
+        if ($category->offer_image != null) {
+            $category->offer_image =  asset("storage/" . $category->offer_image);
+        }
+        if ($category->image_symbol != null) {
+            $category->image_symbol =  asset("storage/" . $category->image_symbol);
+        }
+
+
+        if ($category->gallery != null) {
+            $category->gallery = $category->gallery->map(function ($image) {
+                $image = asset('storage/' . $image);
+
+                return $image;
+            });
+        }
+
+        if ($category->features != null) {
+            $category->features = $category->features->map(function ($feature) {
+                $feature['img'] = asset('storage/' . $feature['img']);
+
+                return $feature;
+            });
+        }
+        return $category;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $categories = Category::all()->map(function ($category) {
-            $category->avatar =  asset("storage/" . $category->avatar);
-            $category->cover =  asset("storage/" . $category->cover);
-            
+            $category = $this->assetify($category);
             return $category;
         });
 
@@ -27,12 +58,11 @@ class CategoryController extends Controller
     public function show($id)
     {
         $category = Category::find($id);
-        $category->avatar =  asset("storage/" . $category->avatar);
-        $category->cover =  asset("storage/" . $category->cover);
-
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
+
+        $category = $this->assetify($category);
 
         return response()->json($category);
     }

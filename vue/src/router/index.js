@@ -6,7 +6,7 @@ import ProductDetails from "../views/Products/show.vue";
 import EditProduct from "../views/Products/edit.vue";
 
 import Company from "../views/company.vue";
-import Categoories from "../views/Categories/index.vue";
+import Categories from "../views/Categories/index.vue";
 import newcategory from "../views/Categories/create.vue";
 import detailscategory from "../views/Categories/show.vue";
 
@@ -64,9 +64,9 @@ const router = createRouter({
             component: Company,
         },
         {
-            path: "/categoories",
-            name: "categoories",
-            component: Categoories,
+            path: "/categories",
+            name: "Categories",
+            component: Categories,
         },
         {
             path: "/categories/:id",

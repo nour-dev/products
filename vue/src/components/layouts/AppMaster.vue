@@ -332,7 +332,7 @@
                                 </a>
                                 <ul class="treeview-menu">
                                     <li>
-                                        <router-link to="/categoories"
+                                        <router-link to="/categories"
                                             ><i class="icon-Commit"
                                                 ><span class="path1"></span
                                                 ><span class="path2"></span></i

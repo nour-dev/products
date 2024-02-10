@@ -10,9 +10,23 @@
                         <div class="d-inline-block align-items-center">
                             <nav>
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                                    <li class="breadcrumb-item" aria-current="page">Categories</li>
-                                    <li class="breadcrumb-item active" aria-current="page">Create</li>
+                                    <li class="breadcrumb-item">
+                                        <a href="#"
+                                            ><i class="mdi mdi-home-outline"></i
+                                        ></a>
+                                    </li>
+                                    <li
+                                        class="breadcrumb-item"
+                                        aria-current="page"
+                                    >
+                                        Categories
+                                    </li>
+                                    <li
+                                        class="breadcrumb-item active"
+                                        aria-current="page"
+                                    >
+                                        Create
+                                    </li>
                                 </ol>
                             </nav>
                         </div>
@@ -30,48 +44,95 @@
                             <!-- /.box-header -->
                             <form class="form" @submit.prevent="submitCategory">
                                 <div class="box-body">
-                                    <h4 class="box-title text-info mb-0"><i class="ti-user me-15"></i>Cartegory Add</h4>
-                                    <hr class="my-15">
+                                    <h4 class="box-title text-info mb-0">
+                                        <i class="ti-user me-15"></i>Cartegory
+                                        Add
+                                    </h4>
+                                    <hr class="my-15" />
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">Name</label>
-                                                <input type="text" v-model="category.name" class="form-control"
-                                                    placeholder="First Name">
-                                                <span v-if="errors.name" class="text-danger">{{ errors.name[0] }}</span>
+                                                <label class="form-label"
+                                                    >Name</label
+                                                >
+                                                <input
+                                                    type="text"
+                                                    v-model="category.name"
+                                                    class="form-control"
+                                                    placeholder="First Name"
+                                                />
+                                                <span
+                                                    v-if="errors.name"
+                                                    class="text-danger"
+                                                    >{{ errors.name[0] }}</span
+                                                >
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">Description</label>
-                                                <textarea rows="5" v-model="category.description" class="form-control"
-                                                    placeholder="About Category"></textarea>
+                                                <label class="form-label"
+                                                    >Description</label
+                                                >
+                                                <textarea
+                                                    rows="5"
+                                                    v-model="
+                                                        category.description
+                                                    "
+                                                    class="form-control"
+                                                    placeholder="About Category"
+                                                ></textarea>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">avatar</label>
-                                                <input type="file" class="form-control"
-                                                    @change="onFileChange($event, 'avatar')">
+                                                <label class="form-label"
+                                                    >avatar</label
+                                                >
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    @change="
+                                                        onFileChange(
+                                                            $event,
+                                                            'avatar',
+                                                        )
+                                                    "
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <label class="form-label">cover</label>
-                                                <input type="file" class="form-control"
-                                                    @change="onFileChange($event, 'cover')">
+                                                <label class="form-label"
+                                                    >cover</label
+                                                >
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    @change="
+                                                        onFileChange(
+                                                            $event,
+                                                            'cover',
+                                                        )
+                                                    "
+                                                />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer">
-                                    <button type="button" class="btn btn-warning me-1">
+                                    <button
+                                        type="button"
+                                        class="btn btn-warning me-1"
+                                    >
                                         <i class="ti-trash"></i> Cancel
                                     </button>
-                                    <button type="submit" class="btn btn-primary">
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary"
+                                    >
                                         <i class="ti-save-alt"></i> Save
                                     </button>
                                 </div>
@@ -87,15 +148,15 @@
     <!-- /.content-wrapper -->
 </template>
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-    name: 'newcategory',
+    name: "newcategory",
     data() {
         return {
             category: {
-                name: '',
-                description: '',
+                name: "",
+                description: "",
                 avatar: null,
                 cover: null,
             },
@@ -105,18 +166,19 @@ export default {
     methods: {
         submitCategory() {
             const formData = new FormData();
-            Object.keys(this.category).forEach(key => {
+            Object.keys(this.category).forEach((key) => {
                 formData.append(key, this.category[key]);
             });
-            axios.post('/api/categories', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-                .then(response => {
-                    this.$router.push({ name: 'categoories' }); // توجيه المستخدم إلى صفحة الفئات
+            axios
+                .post("/api/categories", formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 })
-                .catch(error => {
+                .then((response) => {
+                    this.$router.push({ name: "Categories" }); // توجيه المستخدم إلى صفحة الفئات
+                })
+                .catch((error) => {
                     console.error(error);
                     if (error.response && error.response.data.errors) {
                         this.errors = error.response.data.errors; // تخزين الأخطاء لعرضها

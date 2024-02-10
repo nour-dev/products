@@ -33,7 +33,7 @@
                     >
                         <div class="box">
                             <div class="box-header no-border p-0">
-                                <router-link :to="`/category/${category.id}`">
+                                <router-link :to="`/categories/${category.id}`">
                                     <img
                                         class="img-fluid"
                                         :src="

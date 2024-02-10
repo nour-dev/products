@@ -109,7 +109,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="box">
                             <div class="box-header">Offer</div>
                             <div class="box-body">
@@ -136,10 +135,6 @@
                                 <h4 class="box-title">Gallery</h4>
                             </div>
                             <div class="box-body">
-                                <img :src="category.image_symbol" />
-                                <div id="paginator1"></div>
-                            </div>
-                            <div class="box-body">
                                 <div class="inner-user-div4">
                                     <div>
                                         <div
@@ -157,12 +152,20 @@
                                                 <img
                                                     :src="image"
                                                     class="avatar avatar-lg rounded10 bg-primary-light"
-                                                    alt=""
+                                                    alt="image"
                                                 />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="box">
+                            <div class="box-header">Symbol</div>
+                            <div class="box-body">
+                                <img :src="category.image_symbol" />
+                                <div id="paginator1"></div>
                             </div>
                         </div>
                     </div>
@@ -176,8 +179,6 @@
 
 <script>
 import axios from "axios";
-
-// TODO: features :: need to discouse it with client
 
 export default {
     name: "CategoryDetails",
