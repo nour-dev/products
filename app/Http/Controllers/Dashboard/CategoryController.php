@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Category;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
@@ -101,7 +102,8 @@ class CategoryController extends Controller
                 'features' => 'nullable|json',
                 'details' => 'nullable|string',
                 'image_symbol' => 'nullable|image',
-                'gallery' => 'nullable|json',
+                'gallery' => 'nullable',
+                'gallery.*' => 'image',
                 'description' => 'required|string',
                 'offer_title' => 'nullable|string',
                 'offer_image' => 'nullable|image',
@@ -109,30 +111,31 @@ class CategoryController extends Controller
 
             $validated['avatar'] = $request->file('avatar')->store('categories', 'public');
             $validated['cover'] = $request->file('cover')->store('categories', 'public');
-            //     $validated['image_symbol'] = $request->file('image_symbol')->store('categories', 'public');
 
             if ($request->hasFile('offer_image')) {
                 $validated['offer_image'] = $request->file('offer_image')->store('categories/offers', 'public');
             }
-
-            // Handle gallery images if necessary
-            if ($request->filled('gallery')) {
-                $gallery = json_decode($request->input('gallery'), true);
-                $galleryPaths = [];
-                foreach ($gallery as $galleryImage) {
-                    if (isset($galleryImage['image'])) {
-                        $path = $galleryImage['image']->store('categories/gallery', 'public');
-                        $galleryPaths[] = $path;
-                    }
-                }
-                $validated['gallery'] = json_encode($galleryPaths);
+            if ($request->hasFile('image_symbol')) {
+                $validated['image_symbol'] = $request->file('image_symbol')->store('categories/symbols', 'public');
             }
 
+
+            $path = null;
+            // Handle gallery images if necessary
+            if ($request->hasFile('gallery')) {
+                foreach ($request->file('gallery') as $image) {
+                    // push to paths array && store to storage
+                    $name = $image->store('categories/gallery', 'public');
+                    $path[] = $name;
+                }
+                $validated['gallery'] = $path;
+            }
+       
             $category = Category::create($validated);
 
             return response()->json($category, 201);
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            Log::error($e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

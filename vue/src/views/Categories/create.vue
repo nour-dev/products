@@ -38,9 +38,6 @@
                 <div class="row">
                     <div class="col-lg-12 col-12">
                         <div class="box">
-                            <div class="box-header with-border">
-                                <h4 class="box-title">Create</h4>
-                            </div>
                             <!-- /.box-header -->
                             <form class="form" @submit.prevent="submitCategory">
                                 <div class="box-body">
@@ -53,18 +50,20 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label class="form-label"
-                                                    >Name</label
+                                                    >Details</label
                                                 >
                                                 <input
                                                     type="text"
-                                                    v-model="category.name"
+                                                    v-model="category.details"
                                                     class="form-control"
-                                                    placeholder="First Name"
+                                                    placeholder="Details"
                                                 />
                                                 <span
-                                                    v-if="errors.name"
+                                                    v-if="errors.details"
                                                     class="text-danger"
-                                                    >{{ errors.name[0] }}</span
+                                                    >{{
+                                                        errors.details[0]
+                                                    }}</span
                                                 >
                                             </div>
                                         </div>
@@ -119,6 +118,83 @@
                                                 />
                                             </div>
                                         </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label"
+                                                    >symbol</label
+                                                >
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    @change="
+                                                        onFileChange(
+                                                            $event,
+                                                            'image_symbol',
+                                                        )
+                                                    "
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label"
+                                                    >gallery</label
+                                                >
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    name="gallery[]"
+                                                    @change="
+                                                        onFilesChange(
+                                                            $event,
+                                                            'gallery',
+                                                        )
+                                                    "
+                                                    multiple="multiple"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label"
+                                                    >Offer Title</label
+                                                >
+                                                <input
+                                                    type="text"
+                                                    v-model="
+                                                        category.offer_title
+                                                    "
+                                                    class="form-control"
+                                                    placeholder="Offer Title"
+                                                />
+                                                <span
+                                                    v-if="errors.offer_title"
+                                                    class="text-danger"
+                                                    >{{
+                                                        errors.offer_title[0]
+                                                    }}</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label"
+                                                    >Offer Image</label
+                                                >
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    @change="
+                                                        onFileChange(
+                                                            $event,
+                                                            'offer_image',
+                                                        )
+                                                    "
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- /.box-body -->
@@ -155,11 +231,15 @@ export default {
     data() {
         return {
             category: {
-                name: "",
+                details: "",
                 description: "",
+                offer_title: "",
+                offer_image: null,
+                image_symbol: null,
                 avatar: null,
                 cover: null,
             },
+            gallery: [],
             errors: {}, // لتخزين الأخطاء التي قد تعود من الخادم
         };
     },
@@ -169,6 +249,9 @@ export default {
             Object.keys(this.category).forEach((key) => {
                 formData.append(key, this.category[key]);
             });
+            for (let i = 0; i < this.gallery.length; i++) {
+                formData.append("gallery[]", this.gallery[i]);
+            }
             axios
                 .post("/api/categories", formData, {
                     headers: {
@@ -187,6 +270,9 @@ export default {
         },
         onFileChange(event, fieldName) {
             this.category[fieldName] = event.target.files[0];
+        },
+        onFilesChange(event, fieldName) {
+            this.gallery = event.target.files;
         },
     },
 };
