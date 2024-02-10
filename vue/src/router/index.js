@@ -58,12 +58,7 @@ const router = createRouter({
             name: 'EditProduct',
             component: EditProduct
           },
-        {
-            path: "/detailscategory",
-            name: "detailscategory",
-            component: detailscategory,
-        },
-        {
+       {
             path: "/company",
             name: "company",
             component: Company,
@@ -74,6 +69,11 @@ const router = createRouter({
             component: Categoories,
         },
         {
+            path: "/categories/:id",
+            name: "CategoryDetails",
+            component: detailscategory,
+        },
+         {
             path: "/newcategory",
             name: "newcategory",
             component: newcategory,

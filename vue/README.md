@@ -27,3 +27,34 @@ npm run dev
 ```sh
 npm run build
 ```
+
+
+### Tasks
+- [ ] categoryies
+  - [x] list categories (cover, avatar, decription)
+  - [ ] show category details (cover, avatar, description, features ?, gallery, image_symbol, details, offer_title, offer_image)
+  - [ ] create category
+  - [ ] edit category
+  - [ ] delete category
+
+- [ ] products
+  - [ ] list products
+  - [ ] show product details
+  - [ ] create product
+  - [ ] edit product
+  - [ ] delete product
+
+- [ ] services
+  - [ ] list services
+  - [ ] show service details 
+  - [ ] create service
+  - [ ] edit service
+  - [ ] delete service
+
+- [ ] reviews
+  - [ ] list reviews
+  - [ ] show review details 
+  - [ ] create review
+  - [ ] edit review
+  - [ ] delete review
+

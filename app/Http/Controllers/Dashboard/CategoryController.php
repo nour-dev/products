@@ -14,16 +14,26 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::all()->map(function ($category) {
+            $category->avatar =  asset("storage/" . $category->avatar);
+            $category->cover =  asset("storage/" . $category->cover);
+            
+            return $category;
+        });
+
         return response()->json($categories);
     }
 
     public function show($id)
     {
         $category = Category::find($id);
+        $category->avatar =  asset("storage/" . $category->avatar);
+        $category->cover =  asset("storage/" . $category->cover);
+
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
+
         return response()->json($category);
     }
 
@@ -34,7 +44,7 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        Storage::delete(['public/'.$category->avatar, 'public/'.$category->cover, 'public/'.$category->image_symbol, 'public/'.$category->offer_image]);
+        Storage::delete(['public/' . $category->avatar, 'public/' . $category->cover, 'public/' . $category->image_symbol, 'public/' . $category->offer_image]);
 
         $category->delete();
         return response()->json(['message' => 'Category deleted successfully']);
@@ -69,7 +79,7 @@ class CategoryController extends Controller
 
             $validated['avatar'] = $request->file('avatar')->store('categories', 'public');
             $validated['cover'] = $request->file('cover')->store('categories', 'public');
-       //     $validated['image_symbol'] = $request->file('image_symbol')->store('categories', 'public');
+            //     $validated['image_symbol'] = $request->file('image_symbol')->store('categories', 'public');
 
             if ($request->hasFile('offer_image')) {
                 $validated['offer_image'] = $request->file('offer_image')->store('categories/offers', 'public');
@@ -95,7 +105,6 @@ class CategoryController extends Controller
             \Log::error($e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
-
     }
 
 
@@ -121,12 +130,9 @@ class CategoryController extends Controller
         if (!$category) {
             return response()->json(['message' => 'Category not found'], 404);
         }
-        $validated = $request->validate([
-        ]);
+        $validated = $request->validate([]);
         $category->update($validated);
 
         return response()->json($category);
     }
-
-
 }

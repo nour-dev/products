@@ -1,7 +1,7 @@
 import './assets/main.css'
 import 'jquery';
-import 'bootstrap';
-import 'summernote';
+import 'bootstrap/dist/js/bootstrap';
+// import 'summernote/dist/summernote';
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'; // Import your router configuration
