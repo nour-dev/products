@@ -75,56 +75,58 @@
                                 <p>{{ category.details }}</p>
                             </div>
                         </div>
-                        <div class="box">
+                        <div class="box" v-if="category.features">
                             <div class="box-header">
-                                <h4 class="box-title">features</h4>
-                                <pre>{{ category.features }}</pre>
+                                <h4 class="box-title">Features</h4>
                             </div>
+                            <div class="box-body">
+                                <div
+                                    class="media d-lg-flex d-block text-lg-start text-center"
+                                    v-for="(
+                                        feature, index
+                                    ) in category.features"
+                                    :key="index"
+                                >
+                                    <img
+                                        class="me-3 img-fluid rounded bg-primary-light w-100"
+                                        v-if="feature.img"
+                                        :src="feature.img"
+                                    />
+                                    <div class="media-body my-10 my-lg-0">
+                                        <h4
+                                            class="mt-0 mb-2"
+                                            v-if="feature.title"
+                                        >
+                                            {{ feature.title }}
+                                        </h4>
+                                        <div
+                                            v-if="feature.description"
+                                            class="d-flex justify-content-center justify-content-lg-start"
+                                        >
+                                            {{ feature.description }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="box">
+                            <div class="box-header">Offer</div>
                             <div class="box-body">
                                 <div
                                     class="media d-lg-flex d-block text-lg-start text-center"
                                 >
                                     <img
                                         class="me-3 img-fluid rounded bg-primary-light w-100"
-                                        src="../../assets/dashboard/images/avatar/1.jpg"
+                                        :src="category.offer_image"
                                         alt=""
                                     />
                                     <div class="media-body my-10 my-lg-0">
-                                        <h4 class="mt-0 mb-2">title</h4>
-                                        <h6 class="mb-4 text-primary">
-                                            description
-                                        </h6>
-                                        <div
-                                            class="d-flex justify-content-center justify-content-lg-start"
-                                        ></div>
+                                        <h4 class="mt-0 mb-2">
+                                            {{ category.offer_title }}
+                                        </h4>
                                     </div>
-                                    <div id="chart" class="me-3"></div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="box">
-                        <div class="box-body">
-                            <div
-                                class="media d-lg-flex d-block text-lg-start text-center"
-                            >
-                                <img
-                                    class="me-3 img-fluid rounded bg-primary-light w-100"
-                                    :src="category.offer_image"
-                                    alt=""
-                                />
-                                <div class="media-body my-10 my-lg-0">
-                                    <h4 class="mt-0 mb-2">
-                                        {{ category.offer_title }}
-                                    </h4>
-                                    <h6 class="mb-4 text-primary">
-                                        description
-                                    </h6>
-                                    <div
-                                        class="d-flex justify-content-center justify-content-lg-start"
-                                    ></div>
-                                </div>
-                                <div id="chart" class="me-3"></div>
                             </div>
                         </div>
                     </div>
@@ -142,7 +144,11 @@
                                     <div>
                                         <div
                                             class="d-flex align-items-center mb-30"
-                                            v-if="category.gallery.length"
+                                            v-if="
+                                                Array.isArray(
+                                                    category.gallery,
+                                                ) && category.gallery.length
+                                            "
                                         >
                                             <div
                                                 class="me-30"

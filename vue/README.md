@@ -32,7 +32,7 @@ npm run build
 ### Tasks
 - [ ] categoryies
   - [x] list categories (cover, avatar, decription)
-  - [ ] show category details (cover, avatar, description, features ?, gallery, image_symbol, details, offer_title, offer_image)
+  - [ ] show category details (cover, avatar, description, features _image_title_description_, gallery, image_symbol, details, offer_title, offer_image)
   - [ ] create category
   - [ ] edit category
   - [ ] delete category
