@@ -4,9 +4,31 @@
         <div class="container-full">
             <!-- Content Header (Page header) -->
             <div class="content-header">
-                <div class="d-flex align-items-center">
-                    <div class="me-auto">
-                        <h4 class="page-title">Category Details</h4>
+                <div class="d-flex flex-column align-items-start gap-2">
+                    <div
+                        class="me-auto d-flex justify-content-between align-items-center col-12"
+                    >
+                        <h4 class="page-title">Categories</h4>
+
+                        <div class="d-flex gap-2">
+                            <router-link
+                                :to="`/categories/${$route.params.id}/edit`"
+                                class="waves-effect waves-light btn shadow push-btn btn-primary-light"
+                            >
+                                <i class="fa fa-pencil"></i>
+                                Edit
+                            </router-link>
+                            <button
+                                type="button"
+                                @click.prevent="remove"
+                                class="waves-effect waves-light btn shadow push-btn btn-warning-light"
+                            >
+                                <i class="fa fa-trash"></i>
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                    <div>
                         <div class="d-inline-block align-items-center">
                             <nav>
                                 <ol class="breadcrumb">
@@ -197,6 +219,14 @@ export default {
         } catch (error) {
             console.error("There was an error fetching the categories:", error);
         }
+    },
+    methods: {
+        async remove() {
+            try {
+                await axios.delete(`/api/categories/${this.$route.params.id}`);
+                this.$router.push("/categories");
+            } catch (e) {}
+        },
     },
 };
 </script>

@@ -8,6 +8,7 @@ import EditProduct from "../views/Products/edit.vue";
 import Company from "../views/company.vue";
 import Categories from "../views/Categories/index.vue";
 import newcategory from "../views/Categories/create.vue";
+import EditCategory from "../views/Categories/edit.vue";
 import detailscategory from "../views/Categories/show.vue";
 
 
@@ -73,7 +74,12 @@ const router = createRouter({
             name: "CategoryDetails",
             component: detailscategory,
         },
-         {
+        {
+            path: "/categories/:id/edit",
+            name: "CategoryEdit",
+            component: EditCategory,
+        },
+          {
             path: "/newcategory",
             name: "newcategory",
             component: newcategory,
