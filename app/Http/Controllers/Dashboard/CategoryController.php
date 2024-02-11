@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 class CategoryController extends Controller
 {
 
-    function assetify($category)
+    function assetify($category, $handleFeatures = false)
     {
 
         $category->avatar =  asset("storage/" . $category->avatar);
@@ -33,7 +33,7 @@ class CategoryController extends Controller
             });
         }
 
-        if ($category->features != null) {
+        if ($handleFeatures && $category->features != null) {
             $category->features = $category->features->map(function ($feature) {
                 $feature['img'] = asset('storage/' . $feature['img']);
 
@@ -48,7 +48,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all()->map(function ($category) {
+        $categories = Category::paginate(20)->through(function ($category) {
             $category = $this->assetify($category);
             return $category;
         });
@@ -63,7 +63,7 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        $category = $this->assetify($category);
+        $category = $this->assetify($category, true);
 
         return response()->json($category);
     }
@@ -99,7 +99,8 @@ class CategoryController extends Controller
             $validated = $request->validate([
                 'avatar' => 'required|image',
                 'cover' => 'required|image',
-                'features' => 'nullable|json',
+                'features' => 'nullable|array',
+                'features.*.img' => 'image',
                 'details' => 'nullable|string',
                 'image_symbol' => 'nullable|image',
                 'gallery' => 'nullable',
@@ -130,7 +131,23 @@ class CategoryController extends Controller
                 }
                 $validated['gallery'] = $path;
             }
-       
+            // handling features
+            if ($request->has('features')) {
+                // get features assoc array with files
+                $features = $request->all('features')['features'];
+                // remove old features assoc array from validated
+                unset($validated['features']);
+                // go throw features
+                foreach ($features as $feature) {
+                    // add feature to validated array
+                    $validated['features'][] = [
+                        'title' => $feature['title'],
+                        'description' => $feature['description'],
+                        'img' => $feature['img']->store('categories/features', 'public')
+                    ];
+                };
+            }
+
             $category = Category::create($validated);
 
             return response()->json($category, 201);

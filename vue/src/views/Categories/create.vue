@@ -40,12 +40,13 @@
                         <div class="box">
                             <!-- /.box-header -->
                             <form class="form" @submit.prevent="submitCategory">
-                                <div class="box-body">
+                                <div class="box-header">
                                     <h4 class="box-title text-info mb-0">
                                         <i class="ti-user me-15"></i>Cartegory
                                         Add
                                     </h4>
-                                    <hr class="my-15" />
+                                </div>
+                                <div class="box-body">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -197,6 +198,74 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="box-header">
+                                    <h3>Features</h3>
+
+                                    <button
+                                        type="button"
+                                        @click.prevent="addFeature"
+                                        class="waves-effect waves-light btn shadow push-btn btn-primary-light"
+                                    >
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div v-if="features.length" class="box-body">
+                                    <div
+                                        class="row"
+                                        v-for="(feature, i) in features"
+                                        :key="i"
+                                        style="
+                                            border-bottom: 1px solid #ccc;
+                                            margin-bottom: 1em;
+                                        "
+                                    >
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label"
+                                                    >Title</label
+                                                >
+                                                <input
+                                                    type="text"
+                                                    v-model="feature.title"
+                                                    class="form-control"
+                                                    placeholder="Feature Title"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label"
+                                                    >Description</label
+                                                >
+                                                <textarea
+                                                    v-model="
+                                                        feature.description
+                                                    "
+                                                    class="form-control"
+                                                    placeholder="Feature Title"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="form-label"
+                                                    >Image</label
+                                                >
+                                                <input
+                                                    type="file"
+                                                    class="form-control"
+                                                    @change="
+                                                        onFeatureFileChange(
+                                                            $event,
+                                                            i,
+                                                        )
+                                                    "
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer">
                                     <button
@@ -239,18 +308,40 @@ export default {
                 avatar: null,
                 cover: null,
             },
+            features: [],
             gallery: [],
             errors: {}, // لتخزين الأخطاء التي قد تعود من الخادم
         };
     },
     methods: {
+        addFeature() {
+            this.features.push({
+                img: null,
+                title: "",
+                description: "",
+            });
+        },
+        removeFeature(index) {
+            this.features.splice(index, 0);
+        },
         submitCategory() {
             const formData = new FormData();
             Object.keys(this.category).forEach((key) => {
                 formData.append(key, this.category[key]);
             });
-            for (let i = 0; i < this.gallery.length; i++) {
-                formData.append("gallery[]", this.gallery[i]);
+            for (let img of this.gallery) {
+                formData.append("gallery[]", img);
+            }
+            for (let i = 0; i < this.features.length; i++) {
+                formData.append(
+                    `features[${i}][title]`,
+                    this.features[i].title,
+                );
+                formData.append(
+                    `features[${i}][description]`,
+                    this.features[i].description,
+                );
+                formData.append(`features[${i}][img]`, this.features[i].img);
             }
             axios
                 .post("/api/categories", formData, {
@@ -270,6 +361,9 @@ export default {
         },
         onFileChange(event, fieldName) {
             this.category[fieldName] = event.target.files[0];
+        },
+        onFeatureFileChange(event, index) {
+            this.features[index].img = event.target.files[0];
         },
         onFilesChange(event, fieldName) {
             this.gallery = event.target.files;

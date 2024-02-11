@@ -29,7 +29,7 @@
             </div>
 
             <!-- Main content -->
-            <section class="content">
+            <section class="content" v-if="category.id">
                 <div class="row">
                     <div class="col-xl-8 col-12">
                         <div class="box">

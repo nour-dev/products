@@ -28,7 +28,7 @@
                 <div class="row">
                     <div
                         class="col-12 col-lg-4"
-                        v-for="category in categories"
+                        v-for="category in categories.data"
                         :key="category.id"
                     >
                         <div class="box">
@@ -81,22 +81,20 @@ export default {
             categories: [], // تخزين بيانات الفئات هنا
         };
     },
-    created() {
-        this.fetchCategories(); // جلب الفئات عند تحميل المكون
+    async created() {
+        await this.fetchCategories(); // جلب الفئات عند تحميل المكون
     },
     methods: {
-        fetchCategories() {
-            axios
-                .get("/api/categories")
-                .then((response) => {
-                    this.categories = response.data; // تخزين البيانات في المتغير categories
-                })
-                .catch((error) =>
-                    console.error(
-                        "There was an error fetching the categories:",
-                        error,
-                    ),
+        async fetchCategories() {
+            try {
+                let response = await axios.get("/api/categories");
+                this.categories = response.data; // تخزين البيانات في المتغير categories
+            } catch (error) {
+                console.error(
+                    "There was an error fetching the categories:",
+                    error,
                 );
+            }
         },
     },
 };
