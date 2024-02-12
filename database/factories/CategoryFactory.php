@@ -58,7 +58,7 @@ class CategoryFactory extends Factory
         ];
 
         return [
-            'avatar' => 'avatar.png',
+            'avatar' => 'avatar.jpg',
             'cover' => 'cover.png',
             'features' => fake()->randomElements($features),
             'details' => fake()->sentence(),

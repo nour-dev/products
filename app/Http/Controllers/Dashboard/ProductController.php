@@ -13,7 +13,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all()->map(function ($product) {
+        $products = Product::with('category')->get()->map(function ($product) {
             $product->image = $product->image ? asset('storage/' . $product->image) : null;
             $product->image_cover = $product->image_cover ? asset('storage/' . $product->image_cover) : null;
             return $product;
