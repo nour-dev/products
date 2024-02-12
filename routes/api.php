@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\ProductController;
 use App\Http\Controllers\Dashboard\CategoryController;
-
+use App\Http\Controllers\Dashboard\ServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,5 +26,6 @@ Route::resource('reviews',ReviewController::class);
 Route::get('/categories-list',[CategoryController::class, 'list']);
 Route::apiResource('products', ProductController::class);
 Route::apiResource('categories', CategoryController::class);
+Route::apiResource('services', ServiceController::class);
 
 

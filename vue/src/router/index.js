@@ -84,17 +84,17 @@ const router = createRouter({
             name: "newcategory",
             component: newcategory,
         },
-        {
-            path: "/service",
-            name: "service",
-            component: Service,
-        },
-        {
+       {
             path: "/services",
             name: "services",
             component: Services,
         },
         {
+            path: "/services/:id",
+            name: "service",
+            component: Service,
+        },
+         {
             path: "/newervice",
             name: "newervice",
             component: newervice,

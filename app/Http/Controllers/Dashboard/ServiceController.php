@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Service;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -12,7 +13,13 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        //
+        $services = Service::select('id', 'avatar', 'name')->get()->map(function ($service) {
+            $service->avatar = asset("storage/" . $service->avatar);
+
+            return $service;
+        });
+
+        return response()->json($services);
     }
 
     /**
@@ -36,6 +43,20 @@ class ServiceController extends Controller
      */
     public function show(string $id)
     {
+        $service = Service::find($id);
+
+        $service->video_cover = asset("storage/" . $service->video_cover);
+        $service->avatar = asset("storage/" . $service->avatar);
+
+        if ($service->gallery != null) {
+            $service->gallery = $service->gallery->map(function ($image) {
+                $image = asset('storage/' . $image);
+
+                return $image;
+            });
+        }
+
+        return response()->json($service);
         //
     }
 

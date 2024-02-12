@@ -16,10 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('video_cover');
             $table->string('avatar');
-            $table->json('team');
-            $table->json('reviews');
-            $table->json('gallery');
-            $table->json('details');
+            $table->json('reviews'); // list : image , name , comment
+            $table->json('gallery'); // list : images
             $table->longText('description');
             $table->timestamps();
         });
