@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
+
 class ProductController extends Controller
 {
     /**
@@ -16,6 +17,14 @@ class ProductController extends Controller
         $products = Product::with('category')->get()->map(function ($product) {
             $product->image = $product->image ? asset('storage/' . $product->image) : null;
             $product->image_cover = $product->image_cover ? asset('storage/' . $product->image_cover) : null;
+            if ($product->details != null) {
+                $product->details = $product->details->map(function ($image) {
+                    $image = asset('storage/' . $image);
+
+                    return $image;
+                });
+            }
+
             return $product;
         });
 
@@ -70,6 +79,15 @@ class ProductController extends Controller
         // Optionally, you can append the full URL for images
         $product->image = asset('storage/' . $product->image);
         $product->image_cover = asset('storage/' . $product->image_cover);
+
+        if ($product->details != null) {
+            $product->details = $product->details->map(function ($image) {
+                $image = asset('storage/' . $image);
+
+                return $image;
+            });
+        }
+
 
         return response()->json($product);
     }
@@ -151,5 +169,4 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product deleted successfully']);
     }
-
 }

@@ -21,7 +21,7 @@ class ProductFactory extends Factory
         return [
             'name' => fake()->word(),
             'price' => fake()->numberBetween(10,100),
-            'desc' => fake()->numberBetween(1,5),
+            'desc' => fake()->sentence(),
             'image' => 'avatar.png',
             'image_cover' => 'cover.png',
             'details' =>fake()->randomElements($symboles),
