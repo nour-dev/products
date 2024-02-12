@@ -49,7 +49,8 @@ class ProductController extends Controller
             'desc' => 'required|string',
             'image' => 'required|image',
             'image_cover' => 'required|image',
-            'details' => 'required|json',
+            'details' => 'required|array',
+            'details.*' => 'image',
             'category_id' => 'required|exists:categories,id'
         ]);
 
@@ -62,7 +63,20 @@ class ProductController extends Controller
             $imageCoverPath = $request->file('image_cover')->store('products', 'public');
             $validatedData['image_cover'] = $imageCoverPath;
         }
-        $product = Product::create($validatedData);
+        $path = null;
+        // Handle gallery images if necessary
+        if ($request->hasFile('details')) {
+            $validatedData['details'] = [];
+            foreach ($request->file('details') as $image) {
+                // push to paths array && store to storage
+                $name = $image->store('products/details', 'public');
+                $path[] = $name;
+            }
+            $validatedData['details'] = $path;
+        }
+        $product = new Product();
+        $product->fill($validatedData);
+        $product->save();
         return response()->json($product, 201);
     }
 

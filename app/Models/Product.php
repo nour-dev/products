@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-    public $gaurded = ['id', 'created_at', 'updated_at'];
+    protected $fillable = ['name', 'desc', 'image', 'image_cover', 'details', 'price', 'category_id'];
     public $casts = [
         'details' => AsCollection::class
     ];
