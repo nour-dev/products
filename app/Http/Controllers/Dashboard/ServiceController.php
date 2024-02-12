@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
@@ -36,7 +37,55 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string',
+                'description' => 'required|string',
+                'avatar' => 'required|image',
+                'video_cover' => 'required|file',
+                'reviews' => 'nullable|array',
+                'reviews.*.img' => 'image',
+                'gallery' => 'nullable',
+                'gallery.*' => 'image',
+            ]);
+
+            $validated['avatar'] = $request->file('avatar')->store('services', 'public');
+            $validated['video_cover'] = $request->file('video_cover')->store('services', 'public');
+
+            $path = null;
+            // Handle gallery images if necessary
+            if ($request->hasFile('gallery')) {
+                foreach ($request->file('gallery') as $image) {
+                    // push to paths array && store to storage
+                    $name = $image->store('services/gallery', 'public');
+                    $path[] = $name;
+                }
+                $validated['gallery'] = $path;
+            }
+            // handling features
+            if ($request->has('reviews')) {
+                // get features assoc array with files
+                $features = $request->all('reviews')['reviews'];
+                // remove old features assoc array from validated
+                unset($validated['reviews']);
+                // go throw features
+                foreach ($features as $feature) {
+                    // add feature to validated array
+                    $validated['reviews'][] = [
+                        'name' => $feature['name'],
+                        'comment' => $feature['comment'],
+                        'img' => $feature['img']->store('services/features', 'public')
+                    ];
+                };
+            }
+
+            $service = Service::create($validated);
+
+            return response()->json($service, 201);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -64,7 +113,7 @@ class ServiceController extends Controller
                 return $feature;
             });
         }
- 
+
 
         return response()->json($service);
         //

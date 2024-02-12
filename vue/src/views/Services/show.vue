@@ -86,14 +86,16 @@
                             </div>
                             <div class="box-body">
                                 <video
-                                    :src="service.video_cover"
                                     style="
                                         width: 100%;
                                         height: auto;
                                         background: #bbb;
                                         border-radius: 1em;
                                     "
-                                />
+                                    controls
+                                >
+                                    <source :src="service.video_cover" />
+                                </video>
                             </div>
 
                             <div class="box-body">
