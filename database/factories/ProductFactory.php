@@ -16,16 +16,17 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
-        $symboles = ['gallery.jpg', 'gallery.jpg', 'gallery.jpg', 'gallery.jpg'];
+        $path = store_asset('categories/', 'gallery.jpg');
+        $symboles = [$path, $path, $path, $path];
 
         return [
             'name' => fake()->word(),
-            'price' => fake()->numberBetween(10,100),
+            'price' => fake()->numberBetween(10, 100),
             'desc' => fake()->sentence(),
-            'image' => 'avatar.png',
-            'image_cover' => 'cover.png',
-            'details' =>fake()->randomElements($symboles),
-            'category_id' => fake()->numberBetween(1,10),
+            'image' => $path,
+            'image_cover' => $path,
+            'details' => fake()->randomElements($symboles),
+            'category_id' => fake()->numberBetween(1, 10),
         ];
     }
 }

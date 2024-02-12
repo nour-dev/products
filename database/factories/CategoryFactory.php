@@ -19,54 +19,55 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
-        $symboles = ['gallery.jpg', 'gallery.jpg', 'gallery.jpg', 'gallery.jpg'];
+        $path = store_asset('categories/', 'gallery.jpg');
+        $symboles = [$path, $path, $path, $path];
         $features = [
             [
                 'title' => fake()->word(),
                 'description' => fake()->sentence(),
-                'img' => 'feature.jpg'
+                'img' => $path
             ],
             [
                 'title' => fake()->word(),
                 'description' => fake()->sentence(),
-                'img' => 'feature.jpg'
-            ],
-
-            [
-                'title' => fake()->word(),
-                'description' => fake()->sentence(),
-                'img' => 'feature.jpg'
+                'img' => $path
             ],
 
             [
                 'title' => fake()->word(),
                 'description' => fake()->sentence(),
-                'img' => 'feature.jpg'
+                'img' => $path
             ],
 
             [
                 'title' => fake()->word(),
                 'description' => fake()->sentence(),
-                'img' => 'feature.jpg'
+                'img' => $path
             ],
 
             [
                 'title' => fake()->word(),
                 'description' => fake()->sentence(),
-                'img' => 'feature.jpg'
+                'img' => $path
+            ],
+
+            [
+                'title' => fake()->word(),
+                'description' => fake()->sentence(),
+                'img' => $path
             ],
         ];
 
         return [
-            'avatar' => 'avatar.jpg',
-            'cover' => 'cover.png',
+            'avatar' => $path,
+            'cover' => $path,
             'features' => fake()->randomElements($features),
             'details' => fake()->sentence(),
-            'image_symbol' => 'symbol.jpg',
+            'image_symbol' => $path,
             'gallery' => fake()->randomElements($symboles),
             'description' => fake()->sentence(),
             'offer_title' => fake()->word(),
-            'offer_image' => 'image.png',
+            'offer_image' => $path,
         ];
     }
 }
