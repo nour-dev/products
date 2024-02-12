@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
@@ -56,6 +57,15 @@ class ServiceController extends Controller
             });
         }
 
+        if ($service->reviews != null) {
+            $service->reviews = $service->reviews->map(function ($feature) {
+                $feature['img'] = asset('storage/' . $feature['img']);
+
+                return $feature;
+            });
+        }
+ 
+
         return response()->json($service);
         //
     }
@@ -81,6 +91,15 @@ class ServiceController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $service = Service::find($id);
+
+        if (!$service) {
+            return response()->json(['message' => 'service not found'], 404);
+        }
+
+        Storage::delete(['public/' . $service->avatar, 'public/' . $service->cover, 'public/' . $service->image_symbol, 'public/' . $service->offer_image]);
+
+        $service->delete();
+        return response()->json(['message' => 'Category deleted successfully']);
     }
 }

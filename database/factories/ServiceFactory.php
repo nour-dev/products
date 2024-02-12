@@ -19,11 +19,34 @@ class ServiceFactory extends Factory
     {
         $path = store_asset('services/gallery', 'gallery.jpg');
             $gallery = [$path, $path, $path, $path];
+
+        $reviews = [
+            [
+                'name' => fake()->word(),
+                'comment' => fake()->sentence(),
+                'img' => $path
+            ],
+            [
+                'name' => fake()->word(),
+                'comment' => fake()->sentence(),
+                'img' => $path
+            ],
+             [
+                'name' => fake()->word(),
+                'comment' => fake()->sentence(),
+                'img' => $path
+            ],
+             [
+                'name' => fake()->word(),
+                'comment' => fake()->sentence(),
+                'img' => $path
+            ],
+        ];
         return [
             'name' => fake()->word(),
             'video_cover' => store_asset('services/covers', 'cover.png'),
             'avatar' => store_asset('services/avatars', 'avatar.png'),
-            'reviews' => fake()->word(),
+            'reviews' => $reviews,
             'gallery' => fake()->randomElements($gallery),
             'description' => fake()->word(),
         ];

@@ -14,7 +14,7 @@ class Service extends Model
         'name',
         'video_cover',
         'avatar',
-        'reviews', // list : image , name , comment
+        'reviews', // list : img, name , comment
         'gallery', // list : images
         'description',
     ];
