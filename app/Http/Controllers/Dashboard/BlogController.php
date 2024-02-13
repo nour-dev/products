@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -90,6 +91,15 @@ class BlogController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+
+        $blog = Blog::find($id);
+        if (!$blog) {
+            return response()->json(['message' => 'blog not found'], 404);
+        }
+
+        Storage::delete(['public/' . $blog->avatar, 'public/' . $blog->cover]);
+
+        $blog->delete();
+        return response()->json(['message' => 'blog deleted successfully']);
     }
 }
