@@ -16,7 +16,7 @@ class BlogFactory extends Factory
      */
     public function definition(): array
     {
-        $path = store_asset('categories/', 'gallery.jpg');
+        $path = store_asset('categories', 'gallery.jpg');
         $symboles = [$path, $path, $path, $path];
         return [
             'image' => $path,

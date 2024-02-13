@@ -8,14 +8,30 @@ use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
+    protected function assetify($blog)
+    {
+        $blog->image =  asset("storage/" . $blog->image);
+        $blog->cover =  asset("storage/" . $blog->cover);
+
+        if ($blog->images != null) {
+            $blog->images = $blog->images->map(function ($image) {
+                $image = asset('storage/' . $image);
+
+                return $image;
+            });
+        }
+
+        return $blog;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $blogs = Blog::paginate(20)->through(function ($blog) {
-            $blog->image =  asset("storage/" . $blog->image);
-            $blog->cover =  asset("storage/" . $blog->cover);
+            $blog = $this->assetify($blog);
             return $blog;
         });
 
@@ -43,7 +59,14 @@ class BlogController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $blog = Blog::find($id);
+
+        if (!$blog) {
+            return response()->json(['message' => 'Blog not found'], 404);
+        }
+        $blog = $this->assetify($blog);
+
+        return response()->json($blog);
     }
 
     /**

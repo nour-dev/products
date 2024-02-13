@@ -6,13 +6,29 @@
             <div class="content-header">
                 <div class="d-flex align-items-center">
                     <div class="me-auto">
-                        <h4 class="page-title">Blog widgets</h4>
+                        <h4 class="page-title">{{ blog.title }}</h4>
                         <div class="d-inline-block align-items-center">
                             <nav>
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                                    <li class="breadcrumb-item" aria-current="page">widgets</li>
-                                    <li class="breadcrumb-item active" aria-current="page">Blog widgets</li>
+                                    <li class="breadcrumb-item">
+                                        <router-link to="/"
+                                            ><i class="mdi mdi-home-outline"></i
+                                        ></router-link>
+                                    </li>
+                                    <li
+                                        class="breadcrumb-item"
+                                        aria-current="page"
+                                    >
+                                        <router-link to="/">
+                                            Blogs
+                                        </router-link>
+                                    </li>
+                                    <li
+                                        class="breadcrumb-item active"
+                                        aria-current="page"
+                                    >
+                                        {{ blog.title }}
+                                    </li>
                                 </ol>
                             </nav>
                         </div>
@@ -23,48 +39,85 @@
             <!-- Main content -->
             <section class="content">
                 <div class="row">
-                    <div class="col-md-12">
-                <div class="box overflow-hidden">
-                  <figure class="img-hov-zoomin mb-0">
-                    <img src="../../assets/dashboard/images/gallery/thumb/2.jpg" alt="..." />
-                  </figure>
-                  <div class="box-body">
-                    <h4>
-                      <a href="#"
-                        >Ut ac purus ultricies, convallis dui auctor, dignissim
-                        turpis.</a
-                      >
-                    </h4>
-                    <p>October 19, 2018</p>
-                    <p>
-                      Vestibulum volutpat, ante sit amet dignissim imperdiet,
-                      diam diam sodales orci, in gravida lorem erat eu diam.
-                      Nulla lorem nunc, ultrices ac dignissim et, dignissim nec
-                      lacus. Praesent euismod lorem eget justo lacinia rutrum
-                      sed at mi.
-                    </p>
-                    <div class="flexbox align-items-center mt-3">
-                      <a class="btn btn-sm btn-bold btn-primary" href="#"
-                        >Read more</a
-                      >
-                      <div class="gap-items-4">
-                        <a class="text-muted" href="#">
-                          <i class="fa fa-heart me-1"></i> 58
-                        </a>
-                        <a class="text-muted" href="#">
-                          <i class="fa fa-comment me-1"></i> 23
-                        </a>
-                      </div>
+                    <div class="col-md-8">
+                        <div class="box overflow-hidden">
+                            <figure class="img-hov-zoomin mb-0">
+                                <img :src="blog.cover" />
+                            </figure>
+                            <div class="box-body">
+                                <h4>
+                                    <a href="#">{{ blog.title }}</a>
+                                </h4>
+                                <p>
+                                    <strong>author: </strong>{{ blog.author }}
+                                </p>
+                                <p>
+                                    <strong>created at:</strong>
+                                    {{ format(blog.created_at) }}
+                                </p>
+                                <p>
+                                    <strong>updated at:</strong>
+                                    {{ format(blog.created_at) }}
+                                </p>
+                                <p>
+                                    {{ blog.article }}
+                                </p>
+                                <div class="flexbox align-items-center mt-3">
+                                    <div class="d-flex gap-2">
+                                        <router-link
+                                            :to="`/blogs/${$route.params.id}/edit`"
+                                            class="waves-effect waves-light btn shadow push-btn btn-primary-light"
+                                        >
+                                            <i class="fa fa-pencil"></i>
+                                            Edit
+                                        </router-link>
+                                        <button
+                                            type="button"
+                                            @click.prevent="remove"
+                                            class="waves-effect waves-light btn shadow push-btn btn-warning-light"
+                                        >
+                                            <i class="fa fa-trash"></i>
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
+                    <div class="col-md-4">
+                        <div class="box">
+                            <div class="box-header">
+                                <h4 class="box-title">Images</h4>
+                            </div>
+                            <div class="box-body">
+                                <div class="inner-user-div4">
+                                    <div>
+                                        <div
+                                            class="d-flex align-items-center mb-30"
+                                            v-if="
+                                                Array.isArray(blog.images) &&
+                                                blog.images.length
+                                            "
+                                        >
+                                            <div
+                                                class="me-30"
+                                                v-for="image in blog.images"
+                                            >
+                                                <img
+                                                    :src="image"
+                                                    class="avatar avatar-lg rounded10 bg-primary-light"
+                                                    alt="image"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-
-                </div>
-
 
                 <!-- /.row -->
-
             </section>
             <!-- /.content -->
         </div>
@@ -72,5 +125,35 @@
     <!-- /.content-wrapper -->
 </template>
 <script>
-export default { name: 'newproduct', }
+import axios from "axios";
+export default {
+    name: "newproduct",
+
+    data() {
+        return {
+            blog: {},
+        };
+    },
+
+    async created() {
+        try {
+            this.blog = (
+                await axios.get(`/api/blogs/${this.$route.params.id}`)
+            ).data;
+        } catch (error) {
+            console.error("There was an error fetching the blogs:", error);
+        }
+    },
+    methods: {
+        async remove() {
+            try {
+                await axios.delete(`/api/blogs/${this.$route.params.id}`);
+                this.$router.push("/blogs");
+            } catch (e) {}
+        },
+        format(date) {
+            return new Date(date).toLocaleString();
+        },
+    },
+};
 </script>
