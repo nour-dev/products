@@ -31,107 +31,107 @@ import blog from "../views/Blogs/show.vue";
 
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL),
-    routes: [
-        {
-            path: "/",
-            name: "statistics",
-            component: Statistics,
-        },
-        {
-            path: '/products',
-            name: 'Products',
-            component: Products
-          },
-          {
-            path: '/products/create',
-            name: 'NewProduct',
-            component: NewProduct
-          }
-         ,
-          {
-            path: '/products/:id',
-            name: 'ProductDetails',
-            component: ProductDetails
-          },
-          {
-            path: '/products/:id/edit',
-            name: 'EditProduct',
-            component: EditProduct
-          },
-       {
-            path: "/company",
-            name: "company",
-            component: Company,
-        },
-        {
-            path: "/categories",
-            name: "Categories",
-            component: Categories,
-        },
-        {
-            path: "/categories/:id",
-            name: "CategoryDetails",
-            component: detailscategory,
-        },
-        {
-            path: "/categories/:id/edit",
-            name: "CategoryEdit",
-            component: EditCategory,
-        },
-          {
-            path: "/newcategory",
-            name: "newcategory",
-            component: newcategory,
-        },
-       {
-            path: "/services",
-            name: "services",
-            component: Services,
-        },
-        {
-            path: "/services/:id",
-            name: "service",
-            component: Service,
-        },
-         {
-            path: "/newervice",
-            name: "newervice",
-            component: newervice,
-        },
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: "/",
+      name: "statistics",
+      component: Statistics,
+    },
+    {
+      path: '/products',
+      name: 'Products',
+      component: Products
+    },
+    {
+      path: '/products/create',
+      name: 'NewProduct',
+      component: NewProduct
+    }
+    ,
+    {
+      path: '/products/:id',
+      name: 'ProductDetails',
+      component: ProductDetails
+    },
+    {
+      path: '/products/:id/edit',
+      name: 'EditProduct',
+      component: EditProduct
+    },
+    {
+      path: "/company",
+      name: "company",
+      component: Company,
+    },
+    {
+      path: "/categories",
+      name: "Categories",
+      component: Categories,
+    },
+    {
+      path: "/categories/:id",
+      name: "CategoryDetails",
+      component: detailscategory,
+    },
+    {
+      path: "/categories/:id/edit",
+      name: "CategoryEdit",
+      component: EditCategory,
+    },
+    {
+      path: "/newcategory",
+      name: "newcategory",
+      component: newcategory,
+    },
+    {
+      path: "/services",
+      name: "services",
+      component: Services,
+    },
+    {
+      path: "/services/:id",
+      name: "service",
+      component: Service,
+    },
+    {
+      path: "/newervice",
+      name: "newervice",
+      component: newervice,
+    },
 
-        {
-            path: "/review",
-            name: "review",
-            component: review,
-        },
-        {
-            path: "/reviews",
-            name: "reviews",
-            component: reviews,
-        },
-        {
-            path: "/newreview",
-            name: "newreview",
-            component: newreview,
-        },
+    {
+      path: "/review",
+      name: "review",
+      component: review,
+    },
+    {
+      path: "/reviews",
+      name: "reviews",
+      component: reviews,
+    },
+    {
+      path: "/newreview",
+      name: "newreview",
+      component: newreview,
+    },
 
-        {
-            path: "/blog",
-            name: "blog",
-            component: blog,
-        },
-        {
-            path: "/blogs",
-            name: "blogs",
-            component: blogs,
-        },
-        {
-            path: "/newblog",
-            name: "newblog",
-            component: newblog,
-        },
+    {
+      path: "/blogs",
+      name: "blogs",
+      component: blogs,
+    },
+    {
+      path: "/blogs/:id",
+      name: "blog",
+      component: blog,
+    },
+    {
+      path: "/newblog",
+      name: "newblog",
+      component: newblog,
+    },
 
-    ],
+  ],
 });
 export default router;

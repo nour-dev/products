@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Blog;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -12,7 +13,13 @@ class BlogController extends Controller
      */
     public function index()
     {
-        //
+        $blogs = Blog::paginate(20)->through(function ($blog) {
+            $blog->image =  asset("storage/" . $blog->image);
+            $blog->cover =  asset("storage/" . $blog->cover);
+            return $blog;
+        });
+
+        return response()->json($blogs);
     }
 
     /**

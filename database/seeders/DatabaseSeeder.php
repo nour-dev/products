@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Blog;
 use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Database\Seeder;
@@ -20,6 +21,7 @@ class DatabaseSeeder extends Seeder
         ]);
         Product::factory(40)->create();
         Service::factory(10)->create();
+        Blog::factory(20)->create();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

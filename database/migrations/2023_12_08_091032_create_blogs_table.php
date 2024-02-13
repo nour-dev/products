@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('author');
             $table->string('cover');
-            $table->longText('articel');
+            $table->longText('article');
             $table->json('images');
             $table->timestamps();
 
