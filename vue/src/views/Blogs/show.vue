@@ -19,7 +19,7 @@
                                         class="breadcrumb-item"
                                         aria-current="page"
                                     >
-                                        <router-link to="/">
+                                        <router-link to="/blogs">
                                             Blogs
                                         </router-link>
                                     </li>
@@ -59,14 +59,11 @@
                                     <strong>updated at:</strong>
                                     {{ format(blog.created_at) }}
                                 </p>
-                                <p>
-                                    {{ blog.article }}
-                                </p>
                                 <div class="flexbox align-items-center mt-3">
                                     <div class="d-flex gap-2">
                                         <router-link
                                             :to="`/blogs/${$route.params.id}/edit`"
-                                            class="waves-effect waves-light btn shadow push-btn btn-primary-light"
+                                            class="waves-effect waves-light btn shadow push-btn btn-primary"
                                         >
                                             <i class="fa fa-pencil"></i>
                                             Edit
@@ -74,13 +71,18 @@
                                         <button
                                             type="button"
                                             @click.prevent="remove"
-                                            class="waves-effect waves-light btn shadow push-btn btn-warning-light"
+                                            class="waves-effect waves-light btn shadow push-btn btn-warning"
                                         >
                                             <i class="fa fa-trash"></i>
                                             Remove
                                         </button>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="box-body">
+                                <p v-html="blog.article" />
                             </div>
                         </div>
                     </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
@@ -52,7 +53,39 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $validated = $request->validate([
+                'author' => 'required|string',
+                'title' => 'required|string',
+                'article' => 'required|string',
+                'image' => 'required|image',
+                'cover' => 'required|image',
+                'images' => 'nullable',
+                'images.*' => 'image',
+            ]);
+
+            $validated['image'] = $request->file('image')->store('blogs/images', 'public');
+            $validated['cover'] = $request->file('cover')->store('blogs/covers', 'public');
+
+            $path = null;
+            // Handle gallery images if necessary
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    // push to paths array && store to storage
+                    $name = $image->store('blogs/gallery', 'public');
+                    $path[] = $name;
+                }
+                $validated['images'] = $path;
+            }
+
+            $category = Blog::create($validated);
+
+            return response()->json($category, 201);
+        } catch (\Exception $e) {
+
+            Log::error($e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**
