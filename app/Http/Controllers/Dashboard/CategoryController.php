@@ -48,7 +48,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::paginate(20)->through(function ($category) {
+        $categories = Category::paginate(12)->through(function ($category) {
             $category = $this->assetify($category);
             return $category;
         });

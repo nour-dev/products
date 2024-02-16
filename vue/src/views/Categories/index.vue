@@ -24,7 +24,10 @@
                 </div>
             </div>
 
-            <section class="content">
+            <section
+                class="content"
+                v-if="categories.data && categories.data.length"
+            >
                 <div class="row">
                     <div
                         class="col-12 col-lg-4"
@@ -67,6 +70,11 @@
                         </div>
                     </div>
                 </div>
+                <RPagination
+                    :links="categories.links"
+                    @update-page="fetchCategories"
+                    v-if="categories.links && categories.links.length"
+                />
             </section>
         </div>
     </div>
@@ -74,21 +82,31 @@
 
 <script>
 import axios from "axios";
+import RPagination from "../../components/pagination.vue";
+import { useAppStore } from "../../store";
+import { url } from "../../utils";
+import { mapActions } from "pinia";
+
 export default {
     name: "CategoriesIndex",
+    components: { RPagination },
     data() {
         return {
-            categories: [], // تخزين بيانات الفئات هنا
+            categories: {}, // تخزين بيانات الفئات هنا
+            loading: false,
         };
     },
     async created() {
-        await this.fetchCategories(); // جلب الفئات عند تحميل المكون
+        await this.fetchCategories(url("categories?page=1"));
     },
     methods: {
-        async fetchCategories() {
+        ...mapActions(useAppStore, ["showLoading", "hideLoading"]),
+        async fetchCategories(url) {
             try {
-                let response = await axios.get("/api/categories");
+                this.showLoading();
+                let response = await axios.get(url);
                 this.categories = response.data; // تخزين البيانات في المتغير categories
+                this.hideLoading();
             } catch (error) {
                 console.error(
                     "There was an error fetching the categories:",
