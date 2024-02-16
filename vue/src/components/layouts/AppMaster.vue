@@ -452,12 +452,15 @@
             </section>
         </aside>
         <router-view />
+        <RLoading />
     </div>
 </template>
 <script>
 import PerfectScrollbar from "perfect-scrollbar";
+import RLoading from "@/components/loading.vue";
 export default {
     name: "AppMaster",
+    components: { RLoading },
     mounted() {
         const container = this.$refs.container;
         const ps = new PerfectScrollbar(container);
