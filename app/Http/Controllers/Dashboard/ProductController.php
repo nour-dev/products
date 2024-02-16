@@ -9,22 +9,26 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
+    protected function assetify($product)
+    {
+        $product->image = $product->image ? asset('storage/' . $product->image) : null;
+        $product->image_cover = $product->image_cover ? asset('storage/' . $product->image_cover) : null;
+        if ($product->details != null) {
+            $product->details = $product->details->map(function ($image) {
+                $image = asset('storage/' . $image);
+
+                return $image;
+            });
+        }
+        return $product;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $products = Product::with('category')->get()->map(function ($product) {
-            $product->image = $product->image ? asset('storage/' . $product->image) : null;
-            $product->image_cover = $product->image_cover ? asset('storage/' . $product->image_cover) : null;
-            if ($product->details != null) {
-                $product->details = $product->details->map(function ($image) {
-                    $image = asset('storage/' . $image);
-
-                    return $image;
-                });
-            }
-
+        $products = Product::with('category')->paginate(12)->through(function ($product) {
+            $product = $this->assetify($product);
             return $product;
         });
 
@@ -90,18 +94,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        // Optionally, you can append the full URL for images
-        $product->image = asset('storage/' . $product->image);
-        $product->image_cover = asset('storage/' . $product->image_cover);
-
-        if ($product->details != null) {
-            $product->details = $product->details->map(function ($image) {
-                $image = asset('storage/' . $image);
-
-                return $image;
-            });
-        }
-
+        $product = $this->assetify($product);
 
         return response()->json($product);
     }
@@ -155,6 +148,7 @@ class ProductController extends Controller
         }
 
         $product->update($validatedData);
+
         return response()->json($product);
     }
 

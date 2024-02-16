@@ -10,7 +10,7 @@
                 <div class="row fx-element-overlay">
                     <div
                         class="col-12 col-lg-6 col-xl-4"
-                        v-for="product in products"
+                        v-for="product in products.data"
                         :key="product.id"
                     >
                         <div class="box">
@@ -83,6 +83,11 @@
                         <!-- /.box -->
                     </div>
                 </div>
+                <RPagination
+                    :links="products.links"
+                    @update-page="fetchProducts"
+                    v-if="products.links && products.links.length"
+                />
             </section>
             <!-- /.content -->
         </div>
@@ -91,46 +96,37 @@
 </template>
 
 <script>
+import RPagination from "../../components/pagination.vue";
 import axios from "axios";
+import { fetch, url } from "@/utils";
 
 export default {
     name: "Products",
+    components: { RPagination },
     data() {
         return {
             products: [], // Initialize products as an empty array
         };
     },
     methods: {
-        fetchProducts() {
-            axios
-                .get("/api/products") // Adjust the URL as necessary
-                .then((response) => {
-                    this.products = response.data; // Store the fetched products in the data object
-                })
-                .catch((error) => {
-                    console.error(
-                        "There was an error fetching the products:",
-                        error,
-                    );
-                });
+        async fetchProducts(url) {
+            await fetch(url, (products) => (this.products = products));
         },
-        deleteProduct(productId) {
-            axios
-                .delete(`/api/products/${productId}`) // Adjust the URL as necessary
-                .then(() => {
-                    // Refresh the list after deletion
-                    this.fetchProducts();
-                })
-                .catch((error) => {
-                    console.error(
-                        "There was an error deleting the product:",
-                        error,
-                    );
-                });
+        async deleteProduct(productId) {
+            try {
+                await axios.delete(`/api/products/${productId}`); // Adjust the URL as necessary
+                // Refresh the list after deletion
+                this.fetchProducts(url("products?page=1"));
+            } catch (e) {
+                console.error(
+                    "There was an error deleting the product:",
+                    error,
+                );
+            }
         },
     },
-    mounted() {
-        this.fetchProducts(); // Fetch products when the component mounts
+    async created() {
+        await this.fetchProducts(url("products?page=1")); // Fetch products when the component mounts
     },
 };
 </script>

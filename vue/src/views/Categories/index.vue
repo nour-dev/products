@@ -97,9 +97,7 @@ export default {
     },
     methods: {
         async fetchCategories(url) {
-            await fetch(url, (categories) => {
-                this.categories = categories;
-            });
+            await fetch(url, (categories) => (this.categories = categories));
         },
     },
 };
