@@ -81,11 +81,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import RPagination from "../../components/pagination.vue";
-import { useAppStore } from "../../store";
-import { url } from "../../utils";
-import { mapActions } from "pinia";
+import { url, fetch } from "../../utils";
 
 export default {
     name: "CategoriesIndex",
@@ -93,26 +90,16 @@ export default {
     data() {
         return {
             categories: {}, // تخزين بيانات الفئات هنا
-            loading: false,
         };
     },
     async created() {
         await this.fetchCategories(url("categories?page=1"));
     },
     methods: {
-        ...mapActions(useAppStore, ["showLoading", "hideLoading"]),
         async fetchCategories(url) {
-            try {
-                this.showLoading();
-                let response = await axios.get(url);
-                this.categories = response.data; // تخزين البيانات في المتغير categories
-                this.hideLoading();
-            } catch (error) {
-                console.error(
-                    "There was an error fetching the categories:",
-                    error,
-                );
-            }
+            await fetch(url, (categories) => {
+                this.categories = categories;
+            });
         },
     },
 };
