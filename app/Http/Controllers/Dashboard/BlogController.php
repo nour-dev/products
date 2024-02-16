@@ -32,7 +32,7 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blogs = Blog::paginate(20)->through(function ($blog) {
+        $blogs = Blog::paginate(12)->through(function ($blog) {
             $blog = $this->assetify($blog);
             return $blog;
         });

@@ -30,10 +30,10 @@
 
             <!-- Main content -->
             <section class="content">
-                <div class="row" v-if="blogs.length">
+                <div class="row" v-if="blogs && blogs.data.length">
                     <div
                         class="col-xl-6 col-12 h-p100"
-                        v-for="(blog, index) in blogs"
+                        v-for="(blog, index) in blogs.data"
                         :key="index"
                     >
                         <div
@@ -60,8 +60,12 @@
                             </div>
                         </div>
                     </div>
+                    <RPagination
+                        :links="blogs.links"
+                        @update-page="fetchBlogs"
+                        v-if="blogs.links && blogs.links.length"
+                    />
                 </div>
-
                 <!-- /.row -->
             </section>
             <!-- /.content -->
@@ -70,21 +74,27 @@
     <!-- /.content-wrapper -->
 </template>
 <script>
-import axios from "axios";
+import RPagination from "@/components/pagination.vue";
+import { url, fetch } from "@/utils";
 
 export default {
-    name: "blog-index",
+    name: "BlogsIndex",
+    components: { RPagination },
     data() {
         return {
-            blogs: [],
+            blogs: {
+                data: [],
+                links: [],
+            },
         };
     },
     async created() {
-        try {
-            this.blogs = (await axios.get("/api/blogs")).data.data;
-        } catch (e) {}
+        await this.fetchBlogs(url("blogs?page=1"));
     },
     methods: {
+        async fetchBlogs(url) {
+            await fetch(url, (blogs) => (this.blogs = blogs));
+        },
         format(date) {
             return new Date(date).toLocaleString();
         },
