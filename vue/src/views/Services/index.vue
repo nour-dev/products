@@ -29,11 +29,11 @@
             </div>
 
             <!-- Main content -->
-            <section class="content" v-if="services.length">
+            <section class="content" v-if="services && services.data.length">
                 <div class="row">
                     <div
                         class="col-12 col-lg-4"
-                        v-for="(service, index) in services"
+                        v-for="(service, index) in services.data"
                         :key="index"
                     >
                         <div class="box">
@@ -62,6 +62,11 @@
                         </div>
                     </div>
                 </div>
+                <RPagination
+                    :links="services.links"
+                    @update-page="fetchServices"
+                    v-if="services.links && services.links.length"
+                />
             </section>
             <!-- /.content -->
         </div>
@@ -69,19 +74,22 @@
     <!-- /.content-wrapper -->
 </template>
 <script>
-import axios from "axios";
+import RPagination from "@/components/pagination.vue";
+import { url, fetch } from "@/utils";
+
 export default {
+    name: "ServicesIndex",
+    components: { RPagination },
     data() {
-        return { services: [] };
+        return { services: {} };
     },
     async created() {
-        try {
-            let res = await axios.get(`/api/services`);
-            this.services = res.data;
-            console.log("created", this.services);
-        } catch (e) {
-            console.log(e);
-        }
+        await this.fetchServices(url("services?page=1"));
+    },
+    methods: {
+        async fetchServices(url) {
+            await fetch(url, (services) => (this.services = services));
+        },
     },
 };
 </script>

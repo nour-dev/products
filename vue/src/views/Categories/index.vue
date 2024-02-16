@@ -81,8 +81,8 @@
 </template>
 
 <script>
-import RPagination from "../../components/pagination.vue";
-import { url, fetch } from "../../utils";
+import RPagination from "@/components/pagination.vue";
+import { url, fetch } from "@/utils";
 
 export default {
     name: "CategoriesIndex",

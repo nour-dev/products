@@ -10,13 +10,40 @@ use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
+    protected function assetify($service)
+    {
+
+        if ($service->video_cover != null) {
+            $service->video_cover = asset("storage/" . $service->video_cover);
+        }
+        if ($service->avatar != null) {
+            $service->avatar = asset("storage/" . $service->avatar);
+        }
+
+        if ($service->gallery != null) {
+            $service->gallery = $service->gallery->map(function ($image) {
+                $image = asset('storage/' . $image);
+
+                return $image;
+            });
+        }
+
+        if ($service->reviews != null) {
+            $service->reviews = $service->reviews->map(function ($feature) {
+                $feature['img'] = asset('storage/' . $feature['img']);
+
+                return $feature;
+            });
+        }
+        return $service;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $services = Service::select('id', 'avatar', 'name')->get()->map(function ($service) {
-            $service->avatar = asset("storage/" . $service->avatar);
+        $services = Service::select('id', 'avatar', 'name')->paginate(12)->through(function ($service) {
+            $service = $this->assetify($service);
 
             return $service;
         });
@@ -94,25 +121,6 @@ class ServiceController extends Controller
     public function show(string $id)
     {
         $service = Service::find($id);
-
-        $service->video_cover = asset("storage/" . $service->video_cover);
-        $service->avatar = asset("storage/" . $service->avatar);
-
-        if ($service->gallery != null) {
-            $service->gallery = $service->gallery->map(function ($image) {
-                $image = asset('storage/' . $image);
-
-                return $image;
-            });
-        }
-
-        if ($service->reviews != null) {
-            $service->reviews = $service->reviews->map(function ($feature) {
-                $feature['img'] = asset('storage/' . $feature['img']);
-
-                return $feature;
-            });
-        }
 
 
         return response()->json($service);
