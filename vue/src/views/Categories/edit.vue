@@ -34,7 +34,7 @@
                 </div>
             </div>
             <!-- Main content -->
-            <section class="content">
+            <section class="content" v-if="category.id">
                 <div class="row">
                     <div class="col-lg-12 col-12">
                         <div class="box">
@@ -86,74 +86,47 @@
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="form-label"
-                                                    >avatar</label
-                                                >
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    @change="
-                                                        onFileChange(
-                                                            $event,
-                                                            'avatar',
-                                                        )
-                                                    "
-                                                />
-                                            </div>
+                                            <RFileUpload
+                                                :file="category.avatar"
+                                                label="Avatar"
+                                                @update-file="
+                                                    (file) =>
+                                                        (category.avatar = file)
+                                                "
+                                            />
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="form-label"
-                                                    >cover</label
-                                                >
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    @change="
-                                                        onFileChange(
-                                                            $event,
-                                                            'cover',
-                                                        )
-                                                    "
-                                                />
-                                            </div>
+                                            <RFileUpload
+                                                :file="category.cover"
+                                                label="Cover"
+                                                @update-file="
+                                                    (file) =>
+                                                        (category.cover = file)
+                                                "
+                                            />
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="form-label"
-                                                    >symbol</label
-                                                >
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    @change="
-                                                        onFileChange(
-                                                            $event,
-                                                            'image_symbol',
-                                                        )
-                                                    "
-                                                />
-                                            </div>
+                                            <RFileUpload
+                                                label="Symbol"
+                                                :file="category.image_symbol"
+                                                @update-file="
+                                                    (file) =>
+                                                        (category.image_symbol =
+                                                            file)
+                                                "
+                                            />
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="form-label"
-                                                    >gallery</label
-                                                >
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    name="gallery[]"
-                                                    @change="
-                                                        onFilesChange(
-                                                            $event,
-                                                            'gallery',
-                                                        )
-                                                    "
-                                                    multiple="multiple"
-                                                />
-                                            </div>
+                                        <div
+                                            v-if="gallery.length"
+                                            class="col-md-6"
+                                        >
+                                            <RFilesUpload
+                                                label="Gallery"
+                                                :files="gallery"
+                                                @update-files="
+                                                    (files) => (gallery = files)
+                                                "
+                                            />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -180,21 +153,15 @@
                                             </div>
                                         </div>
                                         <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label class="form-label"
-                                                    >Offer Image</label
-                                                >
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    @change="
-                                                        onFileChange(
-                                                            $event,
-                                                            'offer_image',
-                                                        )
-                                                    "
-                                                />
-                                            </div>
+                                            <RFileUpload
+                                                label="Offer Image"
+                                                :file="category.offer_image"
+                                                @update-file="
+                                                    (file) =>
+                                                        (category.offer_image =
+                                                            file)
+                                                "
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -248,21 +215,14 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="form-group">
-                                                <label class="form-label"
-                                                    >Image</label
-                                                >
-                                                <input
-                                                    type="file"
-                                                    class="form-control"
-                                                    @change="
-                                                        onFeatureFileChange(
-                                                            $event,
-                                                            i,
-                                                        )
-                                                    "
-                                                />
-                                            </div>
+                                            <RFileUpload
+                                                label="Image"
+                                                :file="feature.img"
+                                                @update-file="
+                                                    (file) =>
+                                                        (feature.img = file)
+                                                "
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -294,9 +254,13 @@
 </template>
 <script>
 import axios from "axios";
+import { fetch, url } from "@/utils";
+import RFileUpload from "@/components/file-upload.vue";
+import RFilesUpload from "@/components/files-upload.vue";
 
 export default {
-    name: "newcategory",
+    name: "EditCategory",
+    components: { RFileUpload, RFilesUpload },
     data() {
         return {
             category: {
@@ -313,6 +277,14 @@ export default {
             errors: {}, // لتخزين الأخطاء التي قد تعود من الخادم
         };
     },
+    async created() {
+        await fetch(
+            url(`categories/${this.$route.params.id}`),
+            (category) => (this.category = category),
+        );
+        this.features = this.category.features;
+        this.gallery = this.category.gallery;
+    },
     methods: {
         addFeature() {
             this.features.push({
@@ -326,6 +298,9 @@ export default {
         },
         submitCategory() {
             const formData = new FormData();
+
+            formData.append("_method", "put");
+
             Object.keys(this.category).forEach((key) => {
                 formData.append(key, this.category[key]);
             });
@@ -344,13 +319,13 @@ export default {
                 formData.append(`features[${i}][img]`, this.features[i].img);
             }
             axios
-                .post("/api/categories", formData, {
+                .post(`/api/categories/${this.category.id}`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
                 })
                 .then((response) => {
-                    this.$router.push({ name: "Categories" }); // توجيه المستخدم إلى صفحة الفئات
+                    this.$router.push(`/categories/${this.category.id}`); // توجيه المستخدم إلى صفحة الفئات
                 })
                 .catch((error) => {
                     console.error(error);
@@ -358,15 +333,6 @@ export default {
                         this.errors = error.response.data.errors; // تخزين الأخطاء لعرضها
                     }
                 });
-        },
-        onFileChange(event, fieldName) {
-            this.category[fieldName] = event.target.files[0];
-        },
-        onFeatureFileChange(event, index) {
-            this.features[index].img = event.target.files[0];
-        },
-        onFilesChange(event, fieldName) {
-            this.gallery = event.target.files;
         },
     },
 };

@@ -46,7 +46,7 @@
                                         Add
                                     </h4>
                                 </div>
-                                <div class="box-body">
+                                <div class="box-body" v-if="category.id">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -294,9 +294,10 @@
 </template>
 <script>
 import axios from "axios";
+import { fetch, url } from "@/utils";
 
 export default {
-    name: "newcategory",
+    name: "NewCategory",
     data() {
         return {
             category: {

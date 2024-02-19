@@ -6,10 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Category;
+use App\Rules\StringOrFile;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
+
+    protected $model;
+    protected $validated;
+    protected $original;
 
     function assetify($category, $handleFeatures = false)
     {
@@ -58,7 +64,7 @@ class CategoryController extends Controller
 
     public function list()
     {
-        $categories = Category::select('id','description')->get();
+        $categories = Category::select('id', 'description')->get();
         return response()->json($categories);
     }
 
@@ -164,31 +170,96 @@ class CategoryController extends Controller
     }
 
 
-    /**
-     * Display the specified resource.
-     */
-
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function setOrCleanField($field)
     {
-        //
+        if (is_string(request($field))) {
+            $this->validated[$field] = $this->original->{$field};
+        }
+        if (request()->hasFile($field)) {
+            Storage::delete('public/' . $this->original->get($field));
+            $this->validated[$field] = request()->file($field)->store('categories', 'public');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        $category = Category::find($id);
-        if (!$category) {
+        // fetch original model
+        $this->original = Category::find($id);
+        // check original existance
+        if (!$this->original) {
             return response()->json(['message' => 'Category not found'], 404);
         }
-        $validated = $request->validate([]);
-        $category->update($validated);
 
-        return response()->json($category);
+        // fetch user input from edit page
+        $this->validated = request()->validate([
+            'description' => 'nullable|string',
+            'details' => 'nullable|string',
+            'offer_title' => 'nullable|string',
+            // string or file rule check if input field is string or file
+            'offer_image' => ['nullable', new StringOrFile],
+            'avatar' => ['nullable', new StringOrFile],
+            'cover' => ['nullable', new StringOrFile],
+            'image_symbol' => ['nullable', new StringOrFile],
+            'gallery' => 'nullable|array',
+            'gallery.*' => ['nullable', new StringOrFile],
+            'features' => 'nullable|array',
+            'features.*.img' => [new StringOrFile],
+
+        ]);
+
+        // set file fields by helper method
+        $this->setOrCleanField('avatar');
+        $this->setOrCleanField('cover');
+        $this->setOrCleanField('offer_image');
+        $this->setOrCleanField('image_symbol');
+
+        // Handle gallery images if exist as files or ignore
+        if (request()->has('gallery')) {
+            $path = [];
+            foreach (request('gallery') as $image) {
+                if ($image instanceof UploadedFile) {
+                    // push to paths array && store to storage
+                    $name = $image->store('categories/gallery', 'public');
+                    $path[] = $name;
+                }
+                if (is_string($image)) {
+                    $path[] = str_replace(config('app.url') . ':8000/storage/', '', $image);
+                }
+            }
+            $this->validated['gallery'] = $path;
+        }
+        // handling features
+        if (request()->has('features')) {
+            // get features assoc array with files
+            $features = request('features');
+            // go throw features
+            foreach ($features as $key => $feature) {
+                // if new image uploaded set it
+                if ($feature['img'] instanceof UploadedFile) {
+                    // add feature to validated array
+                    $this->validated['features'][$key] = [
+                        'title' => $feature['title'],
+                        'description' => $feature['description'],
+                        'img' => $feature['img']->store('categories/features', 'public')
+                    ];
+                }
+                // fix url if file not changed
+                if (is_string($feature['img'])) {
+                    $this->validated['features'][$key] = [
+                        'title' => $feature['title'],
+                        'description' => $feature['description'],
+                        'img' => str_replace(config('app.url') . ':8000/storage/', '', $image)
+                    ];
+                }
+            };
+        }
+
+        $this->original->fill($this->validated);
+        $this->original->save();
+
+        return response()->json($this->original, 201);
     }
 }
