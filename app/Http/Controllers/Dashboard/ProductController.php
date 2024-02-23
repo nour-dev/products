@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Product;
+use App\Rules\StringOrFile;
+use Illuminate\Http\UploadedFile;
 
 class ProductController extends Controller
 {
+    protected $model;
+    protected $validated;
+    protected $original;
+
+
     protected function assetify($product)
     {
         $product->image = $product->image ? asset('storage/' . $product->image) : null;
@@ -99,57 +106,60 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function setOrCleanField($field)
     {
-        //
+        if (is_string(request($field))) {
+            $this->validated[$field] = $this->original->{$field};
+        }
+        if (request()->hasFile($field)) {
+            Storage::delete('public/' . $this->original->get($field));
+            $this->validated[$field] = request()->file($field)->store('categories', 'public');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        $product = Product::find($id);
-        if (!$product) {
+        $this->original = Product::find($id);
+        if (!$this->original) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        $validatedData = $request->validate([
-            'name' => 'string|max:255',
-            'price' => 'integer',
-            'desc' => 'string',
-            'image' => 'image|nullable',
-            'image_cover' => 'image|nullable',
-            'details' => 'json',
+        $this->validated = request()->validate([
+            'name' => 'nullable|string|max:255',
+            'price' => 'nullable|integer',
+            'desc' => 'nullable|string',
+            'image' => ['nullable', new StringOrFile],
+            'image_cover' => ['nullable', new StringOrFile],
+            'details' => 'nullable|array',
+            'details.*' => [new StringOrFile],
             'category_id' => 'exists:categories,id'
         ]);
 
-        // Handle Image Upload
-        if ($request->hasFile('image')) {
-            // Delete old image
-            Storage::delete($product->image);
+        $this->setOrCleanField('image');
+        $this->setOrCleanField('image_cover');
 
-            // Store new image
-            $imagePath = $request->file('image')->store('products', 'public');
-            $validatedData['image'] = $imagePath;
+        if (request()->has('details')) {
+            $path = [];
+            foreach (request('details') as $image) {
+                if ($image instanceof UploadedFile) {
+                    // push to paths array && store to storage
+                    $name = $image->store('products/details', 'public');
+                    $path[] = $name;
+                }
+                if (is_string($image)) {
+                    $path[] = str_replace(config('app.url') . ':8000/storage/', '', $image);
+                }
+            }
+            $this->validated['details'] = $path;
         }
+ 
+        $this->original->fill($this->validated);
+        $this->original->save();
 
-        if ($request->hasFile('image_cover')) {
-            // Delete old image cover
-            Storage::delete($product->image_cover);
-
-            // Store new image cover
-            $imageCoverPath = $request->file('image_cover')->store('products', 'public');
-            $validatedData['image_cover'] = $imageCoverPath;
-        }
-
-        $product->update($validatedData);
-
-        return response()->json($product);
+        return response()->json($this->original, 201);
     }
 
 
