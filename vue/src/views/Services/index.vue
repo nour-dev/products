@@ -29,7 +29,10 @@
             </div>
 
             <!-- Main content -->
-            <section class="content" v-if="services && services.data.length">
+            <section
+                class="content"
+                v-if="services && services.data && services.data.length"
+            >
                 <div class="row">
                     <div
                         class="col-12 col-lg-4"
