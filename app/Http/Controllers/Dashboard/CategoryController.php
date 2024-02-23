@@ -12,8 +12,6 @@ use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
-
-    protected $model;
     protected $validated;
     protected $original;
 

@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <section class="content">
+            <section class="content" v-if="blog.id">
                 <div class="box">
                     <div class="box-body">
                         <div class="row">
@@ -70,38 +70,26 @@
                                     >
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="form-label">Image</label>
-                                    <input
-                                        type="file"
-                                        class="form-control"
-                                        @change="onFileChange($event, 'image')"
-                                    />
-                                </div>
+                            <div id="image" class="col-md-4">
+                                <RFileUpload
+                                    :file="blog.image"
+                                    label="Image"
+                                    @update-file="(file) => (blog.image = file)"
+                                />
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="form-label">Cover</label>
-                                    <input
-                                        type="file"
-                                        class="form-control"
-                                        @change="onFileChange($event, 'cover')"
-                                    />
-                                </div>
+                            <div id="cover" class="col-md-4">
+                                <RFileUpload
+                                    :file="blog.cover"
+                                    label="Cover"
+                                    @update-file="(file) => (blog.cover = file)"
+                                />
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label class="form-label">Images</label>
-                                    <input
-                                        type="file"
-                                        class="form-control"
-                                        @change="
-                                            onFilesChange($event, 'images')
-                                        "
-                                        multiple
-                                    />
-                                </div>
+                            <div id="images" class="col-md-4">
+                                <RFilesUpload
+                                    :files="images"
+                                    label="Images"
+                                    @update-files="(files) => (images = files)"
+                                />
                             </div>
 
                             <div class="col-md-12">
@@ -134,12 +122,18 @@
 
 <script>
 import axios from "axios";
+import { fetch, url } from "@/utils";
+import RFileUpload from "@/components/file-upload.vue";
+import RFilesUpload from "@/components/files-upload.vue";
+
 import { QuillEditor } from "@vueup/vue-quill";
 import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
 export default {
     components: {
         QuillEditor,
+        RFileUpload,
+        RFilesUpload,
     },
     data() {
         return {
@@ -154,24 +148,37 @@ export default {
             errors: {},
         };
     },
+    async created() {
+        await fetch(url(`blogs/${this.$route.params.id}`), (blog) => {
+            this.blog = blog;
+            this.images = blog.images;
+        });
+    },
     methods: {
         async save() {
             const formData = new FormData();
+            formData.append("_method", "put");
 
             Object.keys(this.blog).forEach((key) => {
-                formData.append(key, this.blog[key]);
+                if (key != "images") {
+                    formData.append(key, this.blog[key]);
+                }
             });
 
             for (let img of this.images) {
                 formData.append("images[]", img);
             }
             try {
-                await axios.post("/api/blogs", formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
+                await axios.post(
+                    "/api/blogs/" + this.$route.params.id,
+                    formData,
+                    {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
                     },
-                });
-                this.$router.push(`/blogs/${this.$route.params.id}`);
+                );
+                this.$router.push("/blogs/" + this.$route.params.id);
             } catch (error) {
                 console.error(error);
                 if (error.response && error.response.data.errors) {

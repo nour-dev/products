@@ -27,6 +27,7 @@ import review from "../views/Reviews/show.vue";
 import newblog from "../views/Blogs/create.vue";
 import blogs from "../views/Blogs/index.vue";
 import blog from "../views/Blogs/show.vue";
+import EditBlog from "../views/Blogs/edit.vue";
 
 
 
@@ -127,6 +128,11 @@ const router = createRouter({
       component: blog,
     },
     {
+      path: "/blogs/:id/edit",
+      name: "EditBlog",
+      component: EditBlog,
+    },
+     {
       path: "/newblog",
       name: "newblog",
       component: newblog,

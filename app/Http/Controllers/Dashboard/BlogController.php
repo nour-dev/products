@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
+use App\Rules\StringOrFile;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
+    protected $validated;
+    protected $original;
+
     protected function assetify($blog)
     {
         $blog->image =  asset("storage/" . $blog->image);
@@ -111,14 +116,65 @@ class BlogController extends Controller
         //
     }
 
+    public function setOrCleanField($field)
+    {
+        if (is_string(request($field))) {
+            $this->validated[$field] = $this->original->{$field};
+        }
+        if (request()->hasFile($field)) {
+            Storage::delete('public/' . $this->original->get($field));
+            $this->validated[$field] = request()->file($field)->store('categories', 'public');
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(string $id)
     {
-        //
-    }
+        // fetch original model
+        $this->original = Blog::find($id);
+        // check original existance
+        if (!$this->original) {
+            return response()->json(['message' => 'blog not found'], 404);
+        }
 
+        // fetch user input from edit page
+        $this->validated = request()->validate([
+            'author' => 'required|string',
+            'title' => 'required|string',
+            'article' => 'required|string',
+            'image' => ['nullable', new StringOrFile],
+            'cover' => ['nullable', new StringOrFile],
+            'images' => 'nullable|array',
+            'images.*' => [new StringOrFile],
+        ]);
+
+        // set file fields by helper method
+        $this->setOrCleanField('image');
+        $this->setOrCleanField('cover');
+
+        // Handle gallery images if exist as files or ignore
+        if (request()->has('images')) {
+            $path = [];
+            foreach (request('images') as $image) {
+                if ($image instanceof UploadedFile) {
+                    // push to paths array && store to storage
+                    $name = $image->store('blogs/images', 'public');
+                    $path[] = $name;
+                }
+                if (is_string($image)) {
+                    $path[] = str_replace(config('app.url') . ':8000/storage/', '', $image);
+                }
+            }
+            $this->validated['images'] = $path;
+        }
+
+        $this->original->fill($this->validated);
+        $this->original->save();
+
+        return response()->json($this->original, 201);
+    }
     /**
      * Remove the specified resource from storage.
      */

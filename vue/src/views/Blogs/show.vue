@@ -40,10 +40,22 @@
             <section class="content">
                 <div class="row">
                     <div class="col-md-8">
-                        <div class="box overflow-hidden">
+                        <div
+                            class="box overflow-hidden"
+                            style="position: relative"
+                        >
                             <figure class="img-hov-zoomin mb-0">
                                 <img :src="blog.cover" />
                             </figure>
+                            <img
+                                class="col-md-4 rounded-4 shadow"
+                                style="
+                                    position: absolute;
+                                    top: 18em;
+                                    right: 2em;
+                                "
+                                :src="blog.image"
+                            />
                             <div class="box-body">
                                 <h4>
                                     <a href="#">{{ blog.title }}</a>
