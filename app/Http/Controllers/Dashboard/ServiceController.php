@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Rules\StringOrFile;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ServiceController extends Controller
 {
+    protected $validated;
+    protected $original;
+
     protected function assetify($service)
     {
 
@@ -101,7 +106,7 @@ class ServiceController extends Controller
                     $validated['reviews'][] = [
                         'name' => $feature['name'],
                         'comment' => $feature['comment'],
-                        'img' => $feature['img']->store('services/features', 'public')
+                        'img' => $feature['img']->store('services/reviews', 'public')
                     ];
                 };
             }
@@ -122,25 +127,97 @@ class ServiceController extends Controller
     {
         $service = Service::find($id);
 
+        $service = $this->assetify($service);
+
 
         return response()->json($service);
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function setOrCleanField($field)
     {
-        //
+        if (is_string(request($field))) {
+            $this->validated[$field] = $this->original->{$field};
+        }
+        if (request()->hasFile($field)) {
+            Storage::delete('public/' . $this->original->get($field));
+            $this->validated[$field] = request()->file($field)->store('categories', 'public');
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(string $id)
     {
-        //
+        // fetch original model
+        $this->original = Service::find($id);
+        // check original existance
+        if (!$this->original) {
+            return response()->json(['message' => 'Service not found'], 404);
+        }
+
+        // fetch user input from edit page
+        $this->validated = request()->validate([
+            'name' => 'nullable|string',
+            'description' => 'nullable|string',
+            'avatar' => ['nullable', new StringOrFile],
+            'video_cover' => ['nullable', new StringOrFile],
+            'reviews' => 'nullable|array',
+            'reviews.*.img' => [new StringOrFile],
+            'gallery' => 'nullable|array',
+            'gallery.*' => ['nullable', new StringOrFile],
+        ]);
+
+        // set file fields by helper method
+        $this->setOrCleanField('avatar');
+        $this->setOrCleanField('video_cover');
+
+        // Handle gallery images if exist as files or ignore
+        if (request()->has('gallery')) {
+            $path = [];
+            foreach (request('gallery') as $image) {
+                if ($image instanceof UploadedFile) {
+                    // push to paths array && store to storage
+                    $name = $image->store('services/gallery', 'public');
+                    $path[] = $name;
+                }
+                if (is_string($image)) {
+                    $path[] = str_replace(config('app.url') . ':8000/storage/', '', $image);
+                }
+            }
+            $this->validated['gallery'] = $path;
+        }
+        // handling features
+        if (request()->has('reviews')) {
+            // get reviews assoc array with files
+            $reviews = request('reviews');
+            // go throw reviews
+            foreach ($reviews as $key => $review) {
+                // if new image uploaded set it
+                if ($review['img'] instanceof UploadedFile) {
+                    // add review to validated array
+                    $this->validated['reviews'][$key] = [
+                        'name' => $review['name'],
+                        'comment' => $review['comment'],
+                        'img' => $review['img']->store('services/reviews', 'public')
+                    ];
+                }
+                // fix url if file not changed
+                if (is_string($review['img'])) {
+                    $this->validated['reviews'][$key] = [
+                        'name' => $review['name'],
+                        'comment' => $review['comment'],
+                        'img' => str_replace(config('app.url') . ':8000/storage/', '', $image)
+                    ];
+                }
+            };
+        }
+
+        $this->original->fill($this->validated);
+        $this->original->save();
+
+        return response()->json($this->original, 201);
     }
 
     /**

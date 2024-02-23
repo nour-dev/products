@@ -17,6 +17,7 @@ import detailscategory from "../views/Categories/show.vue";
 import newervice from "../views/Services/create.vue";
 import Services from "../views/Services/index.vue";
 import Service from "../views/Services/show.vue";
+import EditService from "../views/Services/edit.vue";
 
 
 
@@ -49,18 +50,18 @@ const router = createRouter({
       name: 'NewProduct',
       component: NewProduct
     }
-    ,
-    {
-      path: '/products/:id',
-      name: 'ProductDetails',
-      component: ProductDetails
-    },
+     ,
     {
       path: '/products/:id/edit',
       name: 'EditProduct',
       component: EditProduct
     },
     {
+      path: '/products/:id',
+      name: 'ProductDetails',
+      component: ProductDetails
+    },
+   {
       path: "/company",
       name: "company",
       component: Company,
@@ -96,6 +97,11 @@ const router = createRouter({
       component: Service,
     },
     {
+      path: "/services/:id/edit",
+      name: "EditService",
+      component: EditService,
+    },
+     {
       path: "/newervice",
       name: "newervice",
       component: newervice,
